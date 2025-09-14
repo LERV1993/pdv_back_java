@@ -12,7 +12,7 @@ El la raíz del proyecto se debe crear un archivo .env con la siguiente configur
 - USERNAME=root
 - PASSWORD=
 
-Para el ejemplo se utiliza la base de datos por defecto que crea [Xaamp/Laamp](https://www.apachefriends.org/es/index.html) pero se puedo usar cualquier base SQL.
+Para el ejemplo se utiliza la base de datos por defecto que crea [Xampp/Lampp](https://www.apachefriends.org/es/index.html) pero se puedo usar cualquier base SQL.
 
 
 
