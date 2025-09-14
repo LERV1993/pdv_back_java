@@ -1,0 +1,30 @@
+app:
+    cors:
+        allowed-origins: ${ORIGIN}
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  profiles:
+    active: ${PROFILE}
+  datasource:
+    url: jdbc:mysql://localhost:3306/pdv?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        connection.provider_disables_autocommit: true
+        format_sql: true
+    database: mysql
