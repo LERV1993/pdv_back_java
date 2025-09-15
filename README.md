@@ -1,5 +1,5 @@
 
-# Backend JAVA - Programación de Vanguardia 
+# Backend JAVA - Programación de Vanguardia
 
 Backend con JAVA 17 para conectarse a una base de datos y consumir su información desde distintos endpoints.
 
@@ -8,6 +8,7 @@ Backend con JAVA 17 para conectarse a una base de datos y consumir su informaci�
 
 El la raíz del proyecto se debe crear un archivo .env con la siguiente configuración:
 
+- PROFILE=dev
 - URL=jdbc:mysql://localhost:3306/table_example
 - USERNAME=root
 - PASSWORD=
@@ -19,9 +20,9 @@ Para el ejemplo se utiliza la base de datos por defecto que crea [Xampp/Lampp](h
 ## Installation
 
 ```bash
-git clone <URL_REPO>
+git clone https://github.com/LERV1993/pdv_back_java.git
 
-cd <Carpeta con proyecto>
+cd pdv_back_java
 ```
 
 *Completar archivo .env con los parámetros datos detallados anteriormente.*
