@@ -73,7 +73,7 @@ public class ReservationsService {
             return null;
         }
 
-        if (!this.articlesExistAndStillAvailable(request.getIds_articles())) {
+        if (!this.articlesExistAndStillAvailable(request)) {
             log.info("Reservation Service - Add/Edit: Some articles do not exist or are unavailable.");
             return null;
         }
@@ -88,7 +88,6 @@ public class ReservationsService {
         List<ArticleReservationEntity> articleReservations = ArticleReservationEntity
                 .fromReservationEntityAndRequest(reservationEntitySaved, request);
         this.articlesReservationRepository.saveAll(articleReservations);
-        this.articlesRepository.setAvailableFalseForIds(request.getIds_articles());
 
         return ReservationResponseDTO.fromEntity(reservationEntitySaved);
     }
@@ -121,7 +120,9 @@ public class ReservationsService {
         return roomsRepository.findById(id_room).isPresent();
     }
 
-    private boolean articlesExistAndStillAvailable(List<Long> id_articles) {
+    private boolean articlesExistAndStillAvailable(ReservationRequestDTO request) {
+
+        List<Long> id_articles = request.getIds_articles();
 
         if (id_articles.isEmpty()) {
             log.info("Reservation Service - Articles Exist And Still Available: No IDs have been provided.");
@@ -141,8 +142,7 @@ public class ReservationsService {
             return false;
         }
 
-        boolean allAvailable = articles.stream().allMatch(ArticleEntity::getAvailable);
-        if (!allAvailable) {
+        if (this.articlesReservationRepository.hasOverlappingArticlesReservation(id_articles, request.getId(), request.getDate_hour_start(), request.getDate_hour_end())) {
             log.info("Reservation Service - Articles Exist And Still Available: Some of the selected items are not available for reservation.");
             return false;
         }
