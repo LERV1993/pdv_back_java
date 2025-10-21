@@ -1,7 +1,10 @@
 package com.pdv.project.entity;
 
+import com.pdv.project.dto.request.ArticleRequestDTO;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticlesEntity {
+@Builder
+public class ArticleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +25,19 @@ public class ArticlesEntity {
 
     @Column(name = "available", nullable = false)
     private Boolean available;
+
+    public static ArticleEntity fromRequest(ArticleRequestDTO request){
+
+        if(request == null){
+            return null;
+        }
+
+        return ArticleEntity.builder()
+        .id(request.getId())
+        .name(request.getName())
+        .available(request.getAvailable())
+        .build();
+
+    }
 
 }

@@ -3,11 +3,10 @@ package com.pdv.project.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pdv.project.dto.request.PeopleRequestDTO;
+import com.pdv.project.dto.request.ReservationRequestDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
-import com.pdv.project.dto.response.PeopleResponseDTO;
-import com.pdv.project.entity.PeopleEntity;
-import com.pdv.project.service.PeopleService;
+import com.pdv.project.dto.response.ReservationResponseDTO;
+import com.pdv.project.service.ReservationsService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,23 +25,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
-@RequestMapping("/people")
+@RequestMapping("/reservation")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "People controller", description = "Endpoint for actions related to the administration and consultation of people.")
-public class PeopleController {
+@Tag(name = "Reservation controller", description = "Endpoint for actions related to the administration and consultation of reservations.")
+public class ReservationController {
 
-    private final PeopleService service;
+    private final ReservationsService service;
 
     @Operation(
-        summary = "Get people data in the system",
-        description = "Return list of people registered in the system."
+        summary = "Get reservations data in the system",
+        description = "Return list of reservations registered in the system."
     )
     @ApiResponses({
     @ApiResponse(
@@ -50,7 +49,7 @@ public class PeopleController {
             description = "Data returned successfully.",
             content = @Content(
                 mediaType = "application/json",
-                array = @ArraySchema(schema = @Schema(implementation = PeopleResponseDTO.class))
+                array = @ArraySchema(schema = @Schema(implementation = ReservationResponseDTO.class))
             )
         ),
         @ApiResponse(
@@ -75,11 +74,11 @@ public class PeopleController {
         )
     })
     @GetMapping
-    public ResponseEntity<?> getPeople() {
+    public ResponseEntity<?> getReservations() {
 
         try {
 
-            return ResponseEntity.ok(this.service.getPeople());
+            return ResponseEntity.ok(this.service.getReservations());
 
         } catch (Exception e) {
 
@@ -92,12 +91,11 @@ public class PeopleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 
         }
-
     }
 
     @Operation(
-        summary = "Update data from person in the system",
-        description = "Receive information to update person in the system."
+        summary = "Update data from reservation in the system",
+        description = "Receive information to update reservation in the system."
     )
     @ApiResponses({
         @ApiResponse(
@@ -105,7 +103,7 @@ public class PeopleController {
             description = "Data received and saved successfully.",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
+                schema = @Schema(implementation = ReservationResponseDTO.class)
             )
         ),
         @ApiResponse(
@@ -130,31 +128,43 @@ public class PeopleController {
         )
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        description = "For edit people the id is mandatory",
+        description = "For edit reservation the id is mandatory",
         required = true,
         content = @Content(
             mediaType = "application/json",
-            schema = @Schema(implementation = PeopleRequestDTO.class)
+            schema = @Schema(implementation = ReservationRequestDTO.class)
         )
     )
     @PutMapping
-    public ResponseEntity<?> editPeople(@Valid @RequestBody PeopleRequestDTO request) {
+    public ResponseEntity<?> editReservation(@Valid @RequestBody ReservationRequestDTO request) {
 
         try {
 
-            if(request.getId() == null){
+            if (request.getId() == null) {
 
                 ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("The id is mandatory to edit a people record.")
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
+                        .error("The id is mandatory to edit a reservation record.")
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .timestamp(java.time.LocalDateTime.now().toString())
+                        .build();
 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 
             }
 
-            return ResponseEntity.ok(this.service.addEditPeople(request));
+            ReservationResponseDTO response = this.service.addEditReservations(request);
+
+            if(response != null){
+                return ResponseEntity.ok(response);
+            }
+
+            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                    .error("It was not possible to edit the requested record.")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .timestamp(java.time.LocalDateTime.now().toString())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 
         } catch (Exception e) {
 
@@ -172,8 +182,8 @@ public class PeopleController {
     }
 
     @Operation(
-        summary = "Post data from new person in the system",
-        description = "Receive information about a new person to register in the system."
+        summary = "Post data from new reservation in the system",
+        description = "Receive information about a new reservation to register in the system."
     )
     @ApiResponses({
         @ApiResponse(
@@ -181,7 +191,7 @@ public class PeopleController {
             description = "Data received and stored successfully.",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
+                schema = @Schema(implementation = ReservationResponseDTO.class)
             )
         ),
         @ApiResponse(
@@ -210,29 +220,42 @@ public class PeopleController {
         required = true,
         content = @Content(
             mediaType = "application/json",
-            schema = @Schema(implementation = PeopleResponseDTO.class),
+            schema = @Schema(implementation = ReservationResponseDTO.class),
             examples = @ExampleObject(
-            value = "{ \"id\": null, \"name\": \"Rafael Di Zeo\", \"email\": \"bostero22@hotmail.com\"  }")
+            value = "{ \"id\": null, \"id_room\": 3,\"id_people\": 5,\"date_hour_start\": \"2025-10-18 11:00:00\",\"date_hour_end\": \"2025-10-18 12:00:00\",\"ids_articles\": [1,2,3]}")
         )
     )
     @PostMapping
-    public ResponseEntity<?> addPeople(@Valid @RequestBody PeopleRequestDTO request) {
+    public ResponseEntity<?> addReservation(@Valid @RequestBody ReservationRequestDTO request) {
 
         try {
 
-            if(request.getId() != null){
+            if (request.getId() != null) {
 
                 ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("To create a record the id must be null.")
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
+                        .error("To create a record the id must be null.")
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .timestamp(java.time.LocalDateTime.now().toString())
+                        .build();
 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 
             }
 
-            return ResponseEntity.ok(this.service.addEditPeople(request));
+            ReservationResponseDTO response = this.service.addEditReservations(request);
+
+            if(response != null){
+                return ResponseEntity.ok(response);
+            }
+
+            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                    .error("We were unable to create the reservation. Please review your request.")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .timestamp(java.time.LocalDateTime.now().toString())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            
 
         } catch (Exception e) {
 
@@ -246,12 +269,11 @@ public class PeopleController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-
     }
 
     @Operation(
-    summary = "Delete a person by ID",
-    description = "Deletes the person record associated with the given ID."
+        summary = "Delete a reservation by ID",
+        description = "Deletes the reservation record associated with the given ID."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -259,7 +281,7 @@ public class PeopleController {
             description = "Person deleted successfully.",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
+                schema = @Schema(implementation = ReservationResponseDTO.class)
             )
         ),
         @ApiResponse(
@@ -292,36 +314,38 @@ public class PeopleController {
         example = "1"
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePeople(@PathVariable Long id){
+    public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
 
-        if(id == null){
+        if (id == null) {
 
             ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                .error("The id is mandatory to delete a people record.")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .timestamp(java.time.LocalDateTime.now().toString())
-                .build();
+                    .error("The id is mandatory to delete a reservation record.")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .timestamp(java.time.LocalDateTime.now().toString())
+                    .build();
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 
         }
 
-        try{
+        try {   
 
-            PeopleEntity entity = this.service.deletePeople(id);
-            if(entity != null){
-                return ResponseEntity.ok(entity);
+            ReservationResponseDTO reservationDeleted = this.service.deleteReservations(id);
+
+            if(reservationDeleted != null){
+                return ResponseEntity.ok(reservationDeleted);
             }
-            
+
             ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                .error("The ID does not match any record.")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .timestamp(java.time.LocalDateTime.now().toString())
-                .build();
+                    .error("The record cannot be deleted, please review the reqeust.")
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .timestamp(java.time.LocalDateTime.now().toString())
+                    .build();
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
             ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
                     .error(e.getMessage())
@@ -330,7 +354,7 @@ public class PeopleController {
                     .build();
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-            
+
         }
 
     }

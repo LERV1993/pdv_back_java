@@ -1,6 +1,7 @@
 package com.pdv.project.dto.response;
 
 import com.pdv.project.dto.common.BaseDTO;
+import com.pdv.project.entity.RoomEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -13,9 +14,21 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @SuperBuilder
 @Schema(description = "Rooms available for reservation by people in the system.")
-public class RoomsResponseDTO extends BaseDTO {
-    
+public class RoomResponseDTO extends BaseDTO {
+
     @Schema(description = "Room capacity.", example = "15")
     private int capacity;
-    
+
+    public static RoomResponseDTO fromEntity(RoomEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return RoomResponseDTO.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .capacity(entity.getCapacity())
+                .build();
+    }
+
 }

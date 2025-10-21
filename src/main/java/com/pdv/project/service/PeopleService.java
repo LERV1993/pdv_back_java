@@ -2,6 +2,7 @@ package com.pdv.project.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -49,20 +50,22 @@ public class PeopleService {
     }    
 
     @Transactional
-    public boolean deletePeople(Long id) {
+    public PeopleEntity deletePeople(Long id) {
 
         if(id == null){
             log.info("People Service - Delete People: id null.");
-            return false;
+            return null;
         }
 
+        Optional<PeopleEntity> entity = this.repository.findById(id);
 
-        if (repository.existsById(id)) {
+        if (entity.isPresent()) {
             repository.deleteById(id);
-            return true; 
+            return entity.get(); 
         }
-        return false; 
-    }
 
+        log.info("People Service - Delete People: The record for id {}, no exist.", id);
+        return null; 
+    }
 
 }

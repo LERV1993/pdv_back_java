@@ -16,13 +16,15 @@ public class DataTimeUtils {
      * today's date. Both the start and end dates must be entered 
      * using this method to validate that the request is not invalid.
      */
-    public static boolean validateDate(String dateTime) {
+    public static boolean validateDate(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return false;
+        }
 
-        LocalDateTime input = LocalDateTime.parse(dateTime, DATE_TIME_FORMATTER);
-        ZonedDateTime inputZoned = input.atZone(ZONE_ARGENTINA);
+        ZonedDateTime inputZoned = dateTime.atZone(ZONE_ARGENTINA);
         ZonedDateTime nowArgentina = ZonedDateTime.now(ZONE_ARGENTINA);
-        return inputZoned.isAfter(nowArgentina);
 
+        return inputZoned.isAfter(nowArgentina);
     }
 
 }

@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "New person request for regsitration.")
+@Schema(description = "New person request for regsitration or person record to edit with id.")
 public class PeopleRequestDTO {
 
     @Min(value = 0, message = "The id cannot be negative")
     @Max(value = 9223372036854775807L, message = "The id exceeds the maximum allowed")
-    @Schema(description = "The id for the record, can be null if the request is for a creation.", example="18")
+    @Schema(description = "The id for the record, can be null if the request is for a creation.", example="1")
     private Long id;
 
     @NotBlank(message = "The person name cannot be empty")

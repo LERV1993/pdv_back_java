@@ -1,13 +1,20 @@
 package com.pdv.project.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pdv.project.dto.request.PeopleRequestDTO;
+import com.pdv.project.dto.request.RoomRequestDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
-import com.pdv.project.dto.response.PeopleResponseDTO;
-import com.pdv.project.entity.PeopleEntity;
-import com.pdv.project.service.PeopleService;
+import com.pdv.project.dto.response.RoomResponseDTO;
+import com.pdv.project.service.RoomService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,27 +29,18 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 @RestController
-@RequestMapping("/people")
+@RequestMapping("/rooms")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "People controller", description = "Endpoint for actions related to the administration and consultation of people.")
-public class PeopleController {
+@Tag(name = "Rooms controller", description = "Endpoint for actions related to the administration and consultation of Rooms.")
+public class RoomController {
 
-    private final PeopleService service;
+    private final RoomService service;
 
     @Operation(
-        summary = "Get people data in the system",
-        description = "Return list of people registered in the system."
+        summary = "Get rooms data in the system",
+        description = "Return list of rooms registered in the system."
     )
     @ApiResponses({
     @ApiResponse(
@@ -50,7 +48,9 @@ public class PeopleController {
             description = "Data returned successfully.",
             content = @Content(
                 mediaType = "application/json",
-                array = @ArraySchema(schema = @Schema(implementation = PeopleResponseDTO.class))
+                array = @ArraySchema(schema = @Schema(implementation = RoomResponseDTO.class)),
+                examples = @ExampleObject(
+                value = "[{ \"id\": 1, \"name\": \"Sala A3\", \"capacity\": 15  }]")
             )
         ),
         @ApiResponse(
@@ -73,13 +73,13 @@ public class PeopleController {
                 value = "{ \"error\": \"Server Error\", \"status\": \"500\", \"timestamp\": \"2025-09-17T10:16:00\" }")
             )
         )
-    })
+    })    
     @GetMapping
-    public ResponseEntity<?> getPeople() {
+    public ResponseEntity<?> getRooms() {
 
         try {
 
-            return ResponseEntity.ok(this.service.getPeople());
+            return ResponseEntity.ok(this.service.getRooms());
 
         } catch (Exception e) {
 
@@ -96,8 +96,8 @@ public class PeopleController {
     }
 
     @Operation(
-        summary = "Update data from person in the system",
-        description = "Receive information to update person in the system."
+        summary = "Update data from room in the system",
+        description = "Receive information to update room in the system."
     )
     @ApiResponses({
         @ApiResponse(
@@ -105,7 +105,9 @@ public class PeopleController {
             description = "Data received and saved successfully.",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
+                schema = @Schema(implementation = RoomResponseDTO.class),
+                examples = @ExampleObject(
+                value = "{ \"id\": 1, \"name\": \"Sala A3 - edited\", \"capacity\": 20  }")
             )
         ),
         @ApiResponse(
@@ -130,22 +132,24 @@ public class PeopleController {
         )
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        description = "For edit people the id is mandatory",
+        description = "For edit room the id is mandatory",
         required = true,
         content = @Content(
             mediaType = "application/json",
-            schema = @Schema(implementation = PeopleRequestDTO.class)
+            schema = @Schema(implementation = RoomRequestDTO.class),
+            examples = @ExampleObject(
+            value = "{ \"id\": 1, \"name\": \"Sala A3 - edited\", \"capacity\": 20  }")
         )
     )
     @PutMapping
-    public ResponseEntity<?> editPeople(@Valid @RequestBody PeopleRequestDTO request) {
+    public ResponseEntity<?> editRooms(@Valid @RequestBody RoomRequestDTO request) {
 
         try {
 
             if(request.getId() == null){
 
                 ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("The id is mandatory to edit a people record.")
+                    .error("The id is mandatory to edit a room record.")
                     .status(HttpStatus.BAD_REQUEST.value())
                     .timestamp(java.time.LocalDateTime.now().toString())
                     .build();
@@ -154,7 +158,7 @@ public class PeopleController {
 
             }
 
-            return ResponseEntity.ok(this.service.addEditPeople(request));
+            return ResponseEntity.ok(this.service.addEditRooms(request));
 
         } catch (Exception e) {
 
@@ -171,9 +175,10 @@ public class PeopleController {
 
     }
 
+
     @Operation(
-        summary = "Post data from new person in the system",
-        description = "Receive information about a new person to register in the system."
+        summary = "Post data from new room in the system",
+        description = "Receive information about a new room to register in the system."
     )
     @ApiResponses({
         @ApiResponse(
@@ -181,7 +186,9 @@ public class PeopleController {
             description = "Data received and stored successfully.",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
+                schema = @Schema(implementation = RoomResponseDTO.class),
+                examples = @ExampleObject(
+                value = "{ \"id\": 2, \"name\": \"Sala A3\", \"capacity\": 32  }")
             )
         ),
         @ApiResponse(
@@ -210,13 +217,13 @@ public class PeopleController {
         required = true,
         content = @Content(
             mediaType = "application/json",
-            schema = @Schema(implementation = PeopleResponseDTO.class),
+            schema = @Schema(implementation = RoomRequestDTO.class),
             examples = @ExampleObject(
-            value = "{ \"id\": null, \"name\": \"Rafael Di Zeo\", \"email\": \"bostero22@hotmail.com\"  }")
+            value = "{ \"id\": null, \"name\": \"Sala A3\", \"capacity\": 32  }")
         )
     )
     @PostMapping
-    public ResponseEntity<?> addPeople(@Valid @RequestBody PeopleRequestDTO request) {
+    public ResponseEntity<?> addRooms(@Valid @RequestBody RoomRequestDTO request) {
 
         try {
 
@@ -232,7 +239,7 @@ public class PeopleController {
 
             }
 
-            return ResponseEntity.ok(this.service.addEditPeople(request));
+            return ResponseEntity.ok(this.service.addEditRooms(request));
 
         } catch (Exception e) {
 
@@ -250,16 +257,18 @@ public class PeopleController {
     }
 
     @Operation(
-    summary = "Delete a person by ID",
-    description = "Deletes the person record associated with the given ID."
+    summary = "Delete a room by ID",
+    description = "Deletes the room record associated with the given ID."
     )
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Person deleted successfully.",
+            description = "Room deleted successfully.",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
+                schema = @Schema(implementation = RoomResponseDTO.class),
+                examples = @ExampleObject(
+                value = "{ \"id\": 1, \"name\": \"Sala A3\", \"capacity\": 32  }")
             )
         ),
         @ApiResponse(
@@ -269,7 +278,7 @@ public class PeopleController {
                 mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponseDTO.class),
                 examples = @ExampleObject(
-                    value = "{ \"error\": \"The id is mandatory to delete a people record.\", \"status\": 400, \"timestamp\": \"2025-10-19T02:39:28\" }"
+                    value = "{ \"error\": \"The id is mandatory to delete a Rooms record.\", \"status\": 400, \"timestamp\": \"2025-10-19T02:39:28\" }"
                 )
             )
         ),
@@ -287,17 +296,17 @@ public class PeopleController {
     })
     @Parameter(
         name = "id",
-        description = "The unique ID of the person to delete.",
+        description = "The unique ID of the room to delete.",
         required = true,
         example = "1"
-    )
+    )    
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePeople(@PathVariable Long id){
+    public ResponseEntity<?> deleteRooms(@PathVariable Long id){
 
         if(id == null){
 
             ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                .error("The id is mandatory to delete a people record.")
+                .error("The id is mandatory to delete a room record.")
                 .status(HttpStatus.BAD_REQUEST.value())
                 .timestamp(java.time.LocalDateTime.now().toString())
                 .build();
@@ -308,18 +317,7 @@ public class PeopleController {
 
         try{
 
-            PeopleEntity entity = this.service.deletePeople(id);
-            if(entity != null){
-                return ResponseEntity.ok(entity);
-            }
-            
-            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                .error("The ID does not match any record.")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .timestamp(java.time.LocalDateTime.now().toString())
-                .build();
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.ok(this.service.deleteRooms(id));
 
         }catch(Exception e){
 

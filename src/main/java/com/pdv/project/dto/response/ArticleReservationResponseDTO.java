@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "Item assigned to the reservation.")
-public class ArticlesReservationsResponseDTO {
+public class ArticleReservationResponseDTO {
     
     @Schema(description = "Unique identifier assigned to the record", example = "10")
     private Long id;

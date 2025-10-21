@@ -1,7 +1,10 @@
 package com.pdv.project.entity;
 
+import com.pdv.project.dto.request.RoomRequestDTO;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomsEntity {
+@Builder
+public class RoomEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +25,19 @@ public class RoomsEntity {
 
     @Column(name = "room_capacity", nullable = false)
     private int capacity;
+
+    public static RoomEntity fromRequest(RoomRequestDTO request){
+
+        if(request == null){
+            return null;
+        }
+
+        return RoomEntity.builder()
+        .id(request.getId())
+        .name(request.getName())
+        .capacity(request.getCapacity())
+        .build();
+
+    }
 
 }
