@@ -28,6 +28,7 @@ PROFILE=dev
 URL=jdbc:mysql://localhost:3306/table_example
 USERNAME=root
 PASSWORD=
+DDL=update
 ```
 
 - 🧰 Compatible con cualquier base de datos SQL
