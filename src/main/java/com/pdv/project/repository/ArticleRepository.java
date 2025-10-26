@@ -15,6 +15,8 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
 
     List<ArticleEntity> findByAvailableTrue();
 
+    List<ArticleEntity> findByAvailableFalse();
+
     @Modifying
     @Transactional
     @Query("""

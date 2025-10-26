@@ -36,6 +36,12 @@ public class ReservationRequestDTO {
     @Schema(description = "The people id for the record.", example="5")
     private Long id_people;
 
+    @NotNull(message = "The people expedted cannot be null.")
+    @Min(value = 1, message = "The people expected cannot be zero or negative")
+    @Max(value = 200, message = "The people expected exceeds the maximum allowed (200)")
+    @Schema(description = "The people expected for the reservation.", example="5")    
+    private int expected_people;
+
     @NotNull(message = "The date and time cannot be null.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Argentina/Buenos_Aires")
     @Schema(description = "Reservation start date and time", example = "2025-10-18 11:00:00")

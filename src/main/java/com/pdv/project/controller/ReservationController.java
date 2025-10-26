@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pdv.project.dto.request.ReservationRequestDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
 import com.pdv.project.dto.response.ReservationResponseDTO;
+import com.pdv.project.entity.ReservationEntity;
 import com.pdv.project.service.ReservationsService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -222,7 +224,7 @@ public class ReservationController {
             mediaType = "application/json",
             schema = @Schema(implementation = ReservationResponseDTO.class),
             examples = @ExampleObject(
-            value = "{ \"id\": null, \"id_room\": 3,\"id_people\": 5,\"date_hour_start\": \"2025-10-18 11:00:00\",\"date_hour_end\": \"2025-10-18 12:00:00\",\"ids_articles\": [1,2,3]}")
+            value = "{ \"id\": null, \"id_room\": 3,\"id_people\": 5,\"expected_people\": 10 ,\"date_hour_start\": \"2025-10-18 11:00:00\",\"date_hour_end\": \"2025-10-18 12:00:00\",\"ids_articles\": [1,2,3]}")
         )
     )
     @PostMapping
@@ -270,6 +272,58 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    @Operation(
+        summary = "Get reservation details by ID",
+        description = "Returns the full details of a reservation, including associated person, room, and articles."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reservation details retrieved successfully",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ReservationEntity.class))),
+        @ApiResponse(responseCode = "404", description = "Reservation not found with the specified ID",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponseDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @GetMapping("/reservation-details/{id}")
+    public ResponseEntity<?> getReservationDetails(
+        @Parameter(description = "Reservation ID to retrieve", example = "1")
+        @PathVariable Long id
+    ) {
+        try {
+            return ResponseEntity.ok(this.service.getReservationDetails(id));
+        } catch (EntityNotFoundException e) {
+            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                    .error(e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .timestamp(java.time.LocalDateTime.now().toString())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+
+    @Operation(
+        summary = "Get all reservation details",
+        description = "Returns the list of all reservations, including related person, room, and articles information."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reservations retrieved successfully",
+            content = @Content(mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class)))),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @GetMapping("/get-all-reservation-details")
+    public ResponseEntity<?> getAllReservationDetails() {
+        return ResponseEntity.ok(this.service.getAllReservationDetails());
+    }
+
 
     @Operation(
         summary = "Delete a reservation by ID",
