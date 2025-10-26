@@ -44,6 +44,17 @@ public class ArticlesService {
 
     }
 
+    public List<ArticleResponseDTO> getArticlesNotAvailables(){
+
+        List<ArticleEntity> articleEntityList = this.repository.findByAvailableFalse();
+
+        return articleEntityList.stream()
+                .map(ArticleResponseDTO::fromEntity)
+                .filter(Objects::nonNull)
+                .toList();
+
+    }
+
     @Transactional
     public ArticleResponseDTO addEditArticles(ArticleRequestDTO request){
 

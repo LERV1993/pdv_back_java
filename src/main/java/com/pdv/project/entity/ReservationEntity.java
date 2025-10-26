@@ -29,6 +29,9 @@ public class ReservationEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_people", nullable = false)
     private PeopleEntity people;
+    
+    @Column(name = "expected_people", nullable = false)
+    private int expected_people;
 
     @Column(name = "reservation_start", nullable = false)
     private LocalDateTime date_time_start;
@@ -54,6 +57,7 @@ public class ReservationEntity {
             .id(request.getId())
             .room(room)
             .people(people)
+            .expected_people(request.getExpected_people())
             .date_time_start(request.getDate_hour_start())
             .date_time_end(request.getDate_hour_end())
             .build();

@@ -311,6 +311,63 @@ public class ArticleController {
     }
 
     @Operation(
+        summary = "Get all articles that are not available in the system.",
+        description = "Return list of all articles availables registered in the system."
+    )
+    @ApiResponses({
+    @ApiResponse(
+            responseCode = "200",
+            description = "Data returned successfully.",
+            content = @Content(
+                mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = ArticleResponseDTO.class)),
+                examples = @ExampleObject(
+                value = "[{ \"id\": 1, \"name\": \"Gadnic 8000 lumen projector\", \"available\": false  },{ \"id\": 2, \"name\": \"Kanji 700 lumen projector\", \"available\": false  }]")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request. The request could not be processed.",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponseDTO.class),
+                examples = @ExampleObject(
+                value = "{ \"error\": \"Invalid data\", \"status\": \"400\", \"timestamp\": \"2025-09-17T10:16:00\"  }")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error. The request was not processed.",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponseDTO.class),
+                examples = @ExampleObject(
+                value = "{ \"error\": \"Server Error\", \"status\": \"500\", \"timestamp\": \"2025-09-17T10:16:00\" }")
+            )
+        )
+    }) 
+    @GetMapping("/not-available")
+    public ResponseEntity<?> getArticlesNotAvailables() {
+
+        try {
+
+        return ResponseEntity.ok(this.service.getArticlesNotAvailables());
+
+        } catch (Exception e) {
+
+            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
+                    .error(e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .timestamp(java.time.LocalDateTime.now().toString())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+
+        }
+
+    }
+
+    @Operation(
     summary = "Delete a article by ID",
     description = "Deletes the article record associated with the given ID."
     )

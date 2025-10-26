@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.pdv.project.entity.ArticleReservationEntity;
+import com.pdv.project.entity.ReservationEntity;
 
 public interface ArticleReservationRepository extends JpaRepository<ArticleReservationEntity, Long> {
 
     void deleteByReservationId(Long reservationId);
+
+    List<ArticleReservationEntity> findByReservation(ReservationEntity reservation);
 
     @Query("""
                 SELECT COUNT(ar) > 0

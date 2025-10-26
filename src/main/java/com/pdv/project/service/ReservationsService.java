@@ -1,15 +1,22 @@
 package com.pdv.project.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import com.pdv.project.dto.request.ReservationRequestDTO;
+import com.pdv.project.dto.response.ArticleResponseDTO;
+import com.pdv.project.dto.response.PeopleResponseDTO;
+import com.pdv.project.dto.response.ReservationDetailResponseDTO;
 import com.pdv.project.dto.response.ReservationResponseDTO;
+import com.pdv.project.dto.response.RoomResponseDTO;
 import com.pdv.project.entity.ArticleEntity;
 import com.pdv.project.entity.ArticleReservationEntity;
+import com.pdv.project.entity.PeopleEntity;
 import com.pdv.project.entity.ReservationEntity;
+import com.pdv.project.entity.RoomEntity;
 import com.pdv.project.repository.ArticleRepository;
 import com.pdv.project.repository.ArticleReservationRepository;
 import com.pdv.project.repository.PeopleRepository;
@@ -17,6 +24,7 @@ import com.pdv.project.repository.ReservationRepository;
 import com.pdv.project.repository.RoomsRepository;
 import com.pdv.project.utils.DataTimeUtils;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +96,6 @@ public class ReservationsService {
         List<ArticleReservationEntity> articleReservations = ArticleReservationEntity
                 .fromReservationEntityAndRequest(reservationEntitySaved, request);
         this.articlesReservationRepository.saveAll(articleReservations);
-
         return ReservationResponseDTO.fromEntity(reservationEntitySaved);
     }
 
@@ -110,6 +117,20 @@ public class ReservationsService {
 
         log.info("Reservation Service - Delete Reservation: The record for id {}, no exist.", id);
         return null; 
+    }
+
+    public ReservationDetailResponseDTO getReservationDetails(Long id) {
+
+        ReservationEntity reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Reservation not found with id " + id));
+
+        return this.reservationToReservationDetails(reservation);
+    }
+
+    public List<ReservationDetailResponseDTO> getAllReservationDetails() {
+
+        List<ReservationEntity> reservation = reservationRepository.findAll();
+        return reservation.stream().map(r-> this.reservationToReservationDetails(r)).toList();
     }
 
     private boolean peopleExist(Long id_people) {
@@ -166,5 +187,32 @@ public class ReservationsService {
                 request.getDate_hour_end());
 
     }
+
+    private ReservationDetailResponseDTO reservationToReservationDetails(ReservationEntity reservation){
+
+        List<ArticleReservationEntity> articlesReservationEntity = articlesReservationRepository.findByReservation(reservation);
+        List<ArticleResponseDTO> articleResponse = articlesReservationEntity.stream()
+                .map(ar -> ArticleResponseDTO.fromEntity(ar.getArticle()))
+                .toList();
+
+        RoomEntity room = roomsRepository.findById(reservation.getRoom().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with id " + reservation.getRoom().getId()));
+
+        PeopleEntity people = peopleRepository.findById(reservation.getPeople().getId())
+                .orElseThrow(() -> new EntityNotFoundException("People not found with id " + reservation.getPeople().getId()));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return ReservationDetailResponseDTO.builder()
+                .id(reservation.getId())
+                .people(PeopleResponseDTO.fromEntity(people))
+                .room(RoomResponseDTO.fromEntity(room))
+                .expected_people(reservation.getExpected_people())
+                .date_hour_start(reservation.getDate_time_start().format(formatter))
+                .date_hour_end(reservation.getDate_time_end().format(formatter))
+                .articles(articleResponse)
+                .build();
+    }
+
 
 }
