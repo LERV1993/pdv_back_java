@@ -127,6 +127,17 @@ public class ReservationsService {
         return this.reservationToReservationDetails(reservation);
     }
 
+    public  List<ReservationDetailResponseDTO> getReservationDetailsByPersonId(Long id) {
+
+        List<ReservationEntity> reservation = reservationRepository.findByPeople_Id(id);
+        
+        if(reservation.isEmpty()){
+            new EntityNotFoundException("Reservation not found with people id " + id);
+        }
+
+        return reservation.stream().map(r-> this.reservationToReservationDetails(r)).toList();
+    }
+
     public List<ReservationDetailResponseDTO> getAllReservationDetails() {
 
         List<ReservationEntity> reservation = reservationRepository.findAll();
