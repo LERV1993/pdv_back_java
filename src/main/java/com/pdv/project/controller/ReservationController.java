@@ -7,7 +7,6 @@ import com.pdv.project.dto.request.ReservationRequestDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
 import com.pdv.project.dto.response.ReservationDetailResponseDTO;
 import com.pdv.project.dto.response.ReservationResponseDTO;
-import com.pdv.project.entity.ReservationEntity;
 import com.pdv.project.service.ReservationsService;
 
 import io.swagger.v3.oas.annotations.Operation;
