@@ -1,6 +1,7 @@
 package com.pdv.project.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import com.pdv.project.entity.ReservationEntity;
 
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Long> {
+
+  List<ReservationEntity> findByPeople_Id(Long peopleId);
 
   @Query("""
           SELECT COUNT(r) > 0
@@ -35,5 +38,5 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
       @Param("roomId") Long roomId,
       @Param("reservationStart") LocalDateTime reservationStart,
       @Param("reservationEnd") LocalDateTime reservationEnd);
-  
+
 }

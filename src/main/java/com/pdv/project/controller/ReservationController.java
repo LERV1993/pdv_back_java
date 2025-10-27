@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pdv.project.dto.request.ReservationRequestDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
+import com.pdv.project.dto.response.ReservationDetailResponseDTO;
 import com.pdv.project.dto.response.ReservationResponseDTO;
 import com.pdv.project.entity.ReservationEntity;
 import com.pdv.project.service.ReservationsService;
@@ -280,7 +281,7 @@ public class ReservationController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Reservation details retrieved successfully",
             content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = ReservationEntity.class))),
+                schema = @Schema(implementation = ReservationDetailResponseDTO.class))),
         @ApiResponse(responseCode = "404", description = "Reservation not found with the specified ID",
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponseDTO.class))),
@@ -306,6 +307,23 @@ public class ReservationController {
         }
     }
 
+    @Operation(
+        summary = "Get all reservation details by people id",
+        description = "Returns the list of all reservations made by the person corresponding to the specified ID, including information related to people, rooms, and items."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reservations retrieved successfully",
+            content = @Content(mediaType = "application/json",
+                array = @ArraySchema(schema = @Schema(implementation = ReservationDetailResponseDTO.class)))),
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponseDTO.class)))
+    })
+    @GetMapping("/reservation-details-by-person/{id}")
+    public ResponseEntity<?> getAllReservationDetailsByPersonId(@PathVariable Long id) {
+        return ResponseEntity.ok(this.service.getReservationDetailsByPersonId(id));
+    }
+
 
     @Operation(
         summary = "Get all reservation details",
@@ -314,7 +332,7 @@ public class ReservationController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Reservations retrieved successfully",
             content = @Content(mediaType = "application/json",
-                array = @ArraySchema(schema = @Schema(implementation = ReservationEntity.class)))),
+                array = @ArraySchema(schema = @Schema(implementation = ReservationDetailResponseDTO.class)))),
         @ApiResponse(responseCode = "500", description = "Internal server error",
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ErrorResponseDTO.class)))
