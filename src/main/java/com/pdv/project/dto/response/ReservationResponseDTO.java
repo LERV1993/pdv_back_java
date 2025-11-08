@@ -24,9 +24,6 @@ public class ReservationResponseDTO {
     @Schema(description = "Unique identifier assigned to the people", example = "5")
     private Long id_people;
 
-    @Schema(description = "The people expected for the reservation.", example="5")    
-    private int expected_people;
-
     @Schema(description = "Date and time of reservation start.", example = "2025-10-18 11:00:00")
     private String date_hour_start;
 
@@ -43,7 +40,6 @@ public class ReservationResponseDTO {
                 .id(entity.getId())
                 .id_room(entity.getRoom().getId())
                 .id_people(entity.getPeople().getId())
-                .expected_people(entity.getExpected_people())
                 .date_hour_start(entity.getDate_time_start().toString())
                 .date_hour_end(entity.getDate_time_end().toString())
                 .build();
