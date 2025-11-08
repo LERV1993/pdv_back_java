@@ -27,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -146,84 +145,6 @@ public class PeopleController {
 
                 ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
                     .error("The id is mandatory to edit a people record.")
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
-
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-
-            }
-
-            return ResponseEntity.ok(this.service.addEditPeople(request));
-
-        } catch (Exception e) {
-
-            log.info("Error: {}", e.getCause());
-
-            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error(e.getMessage())
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-
-    }
-
-    @Operation(
-        summary = "Post data from new person in the system",
-        description = "Receive information about a new person to register in the system."
-    )
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "200",
-            description = "Data received and stored successfully.",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = PeopleResponseDTO.class)
-            )
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Bad request. The data could not be processed or saved.",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponseDTO.class),
-                examples = @ExampleObject(
-                value = "{ \"error\": \"Invalid data\", \"status\": \"400\", \"timestamp\": \"2025-09-17T10:16:00\"  }")
-            )
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error. The request was not processed.",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ErrorResponseDTO.class),
-                examples = @ExampleObject(
-                value = "{ \"error\": \"Server Error\", \"status\": \"500\", \"timestamp\": \"2025-09-17T10:16:00\" }")
-            )
-        )
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        description = "For create record the id must be null",
-        required = true,
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = PeopleResponseDTO.class),
-            examples = @ExampleObject(
-            value = "{ \"id\": null, \"name\": \"Rafael Di Zeo\", \"email\": \"bostero22@hotmail.com\"  }")
-        )
-    )
-    @PostMapping
-    public ResponseEntity<?> addPeople(@Valid @RequestBody PeopleRequestDTO request) {
-
-        try {
-
-            if(request.getId() != null){
-
-                ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("To create a record the id must be null.")
                     .status(HttpStatus.BAD_REQUEST.value())
                     .timestamp(java.time.LocalDateTime.now().toString())
                     .build();
