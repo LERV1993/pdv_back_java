@@ -218,7 +218,6 @@ public class ReservationsService {
                 .id(reservation.getId())
                 .people(PeopleResponseDTO.fromEntity(people))
                 .room(RoomResponseDTO.fromEntity(room))
-                .expected_people(reservation.getExpected_people())
                 .date_hour_start(reservation.getDate_time_start().format(formatter))
                 .date_hour_end(reservation.getDate_time_end().format(formatter))
                 .articles(articleResponse)
