@@ -4,10 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pdv.project.dto.request.ArticlesAvailablesRequestDTO;
-import com.pdv.project.dto.request.PeopleRequestDTO;
 import com.pdv.project.dto.response.ArticleResponseDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
-import com.pdv.project.dto.response.PeopleResponseDTO;
 import com.pdv.project.service.ArticleReservationService;
 
 import io.swagger.v3.oas.annotations.Operation;
