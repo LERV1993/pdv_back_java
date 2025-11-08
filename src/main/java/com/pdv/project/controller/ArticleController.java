@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pdv.project.dto.request.ArticleRequestDTO;
 import com.pdv.project.dto.response.ArticleResponseDTO;
 import com.pdv.project.dto.response.ErrorResponseDTO;
-import com.pdv.project.service.ArticlesService;
+import com.pdv.project.service.ArticleService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Articles controller", description = "Endpoint for actions related to the administration and consultation of articles.")
 public class ArticleController {
 
-    private final ArticlesService service;
+    private final ArticleService service;
 
     @Operation(
         summary = "Get all articles data in the system",
