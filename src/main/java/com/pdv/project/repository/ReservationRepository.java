@@ -45,7 +45,7 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
                 SELECT re
                 FROM ReservationEntity re
                 WHERE re.date_time_start <= :startDate
-                  AND re.date_time_end > :startDate
+                  AND re.date_time_end >= :startDate
             """)
     List<ReservationEntity> getReservationsIncluded(@Param("startDate") LocalDateTime startDate);
 
