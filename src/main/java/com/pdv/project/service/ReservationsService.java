@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+
+import com.pdv.project.config.RabbitMQConfig;
 import com.pdv.project.dto.request.ReservationRequestDTO;
 import com.pdv.project.dto.response.ArticleResponseDTO;
 import com.pdv.project.dto.response.PeopleResponseDTO;
@@ -24,6 +26,8 @@ import com.pdv.project.repository.ReservationRepository;
 import com.pdv.project.repository.RoomsRepository;
 import com.pdv.project.utils.DataTimeUtils;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ReservationsService {
+
+     private final RabbitTemplate rabbitTemplate;
 
     private final ReservationRepository reservationRepository;
     private final PeopleRepository peopleRepository;
@@ -96,7 +102,12 @@ public class ReservationsService {
         List<ArticleReservationEntity> articleReservations = ArticleReservationEntity
                 .fromReservationEntityAndRequest(reservationEntitySaved, request);
         this.articlesReservationRepository.saveAll(articleReservations);
-        return ReservationResponseDTO.fromEntity(reservationEntitySaved);
+
+        ReservationResponseDTO response = ReservationResponseDTO.fromEntity(reservationEntitySaved);
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, response );
+
+        return response;
     }
 
     @Transactional

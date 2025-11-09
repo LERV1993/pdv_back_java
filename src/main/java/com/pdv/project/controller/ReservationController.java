@@ -224,7 +224,7 @@ public class ReservationController {
             mediaType = "application/json",
             schema = @Schema(implementation = ReservationResponseDTO.class),
             examples = @ExampleObject(
-            value = "{ \"id\": null, \"id_room\": 3,\"id_people\": 5,\"expected_people\": 10 ,\"date_hour_start\": \"2025-10-18 11:00:00\",\"date_hour_end\": \"2025-10-18 12:00:00\",\"ids_articles\": [1,2,3]}")
+            value = "{ \"id\": null, \"id_room\": 3,\"id_people\": 5,\"date_hour_start\": \"2025-10-18 11:00:00\",\"date_hour_end\": \"2025-10-18 12:00:00\",\"ids_articles\": [1,2,3]}")
         )
     )
     @PostMapping

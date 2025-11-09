@@ -115,6 +115,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Rabbit mq -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+			<version>3.5.6</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
