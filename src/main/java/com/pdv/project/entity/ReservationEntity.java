@@ -36,7 +36,7 @@ public class ReservationEntity {
     @Column(name = "reservation_end", nullable = false)
     private LocalDateTime date_time_end;
 
-    public static ReservationEntity fromRequest(ReservationRequestDTO request){
+    public static ReservationEntity fromRequest(ReservationRequestDTO request, Long id){
 
         if(request == null){
             throw new IllegalArgumentException("The entity cannot be null.");
@@ -47,7 +47,7 @@ public class ReservationEntity {
             .build();
 
         PeopleEntity people = PeopleEntity.builder()
-            .id(request.getId_people())
+            .id(id)
             .build();
 
         return ReservationEntity.builder()

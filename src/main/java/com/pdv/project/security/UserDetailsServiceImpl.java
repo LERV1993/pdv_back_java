@@ -117,4 +117,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public Collection<? extends GrantedAuthority> convertToAuthorities(Role role) {
         return List.of(new SimpleGrantedAuthority(role.toString()));
     }
+
+    public String getEmailFromUserContext(){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof User user) {
+            System.out.println("User Details Service Impl - Get Email From Context: Email: " + user.getUsername());
+            return user.getUsername();
+
+        }else{
+            System.out.println("User Details Service Impl - Get Email From Context: No user email exists.");
+            throw new IllegalArgumentException("The request token does not correspond to any valid email address.");
+        }
+
+    }
+
 }
