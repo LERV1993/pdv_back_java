@@ -6,6 +6,9 @@ jwt:
   secret: ${JWTKEY}
   expiration: ${EXPIRE}
 
+python:
+  url: ${PYTHON_URL}
+
 spring:
   config:
     import: optional:file:.env[.properties]

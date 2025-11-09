@@ -21,7 +21,7 @@ Backend desarrollado en **Java 17** con **Spring Boot**, diseñado para conectar
 
 ## ⚙️ Configuración del entorno
 
-El proyecto utiliza RabbitMQ en un contenedor de docker por lo que es necesario tener docker instalado
+El proyecto utiliza RabbitMQ en un contenedor de docker por lo que es necesario tener docker instalado [Docker](https://www.docker.com/)
 
 En la raíz del proyecto se debe crear un archivo `.env` con la siguiente configuración:
 
@@ -31,6 +31,9 @@ URL=jdbc:mysql://localhost:3306/table_example
 USERNAME=root
 PASSWORD=
 DDL=update
+JWTKEY=una_contraseña_segura_para_los_tokens
+EXPIRE=3600000
+PYTHON_URL=http://127.0.0.1:8000
 ```
 
 - 🧰 Compatible con cualquier base de datos SQL
