@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
         "name": "Juan",
         "email": "juan.perez@example.com"
       },
-      "expected_people": 5,
       "date_hour_start": "2025-10-18 11:00:00",
       "date_hour_end": "2025-10-18 12:00:00",
       "articles": [
@@ -55,9 +54,6 @@ public class ReservationDetailResponseDTO {
 
     @Schema(description = "Person making the reservation")
     private PeopleResponseDTO people;
-
-    @Schema(description = "The people expected for the reservation.", example="5")    
-    private int expected_people;
 
     @Schema(description = "Date and time of reservation start.", example = "2025-10-18 11:00:00")
     private String date_hour_start;

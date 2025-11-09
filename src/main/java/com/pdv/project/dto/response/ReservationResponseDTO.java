@@ -1,5 +1,7 @@
 package com.pdv.project.dto.response;
 
+import java.io.Serializable;
+
 import com.pdv.project.entity.ReservationEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Schema(description = "Reservation record corresponding to a room.")
-public class ReservationResponseDTO {
+public class ReservationResponseDTO implements Serializable {
 
     @Schema(description = "Unique identifier assigned to the record", example = "1")
     private Long id;

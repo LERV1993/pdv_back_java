@@ -21,6 +21,8 @@ Backend desarrollado en **Java 17** con **Spring Boot**, diseñado para conectar
 
 ## ⚙️ Configuración del entorno
 
+El proyecto utiliza RabbitMQ en un contenedor de docker por lo que es necesario tener docker instalado
+
 En la raíz del proyecto se debe crear un archivo `.env` con la siguiente configuración:
 
 ```env
@@ -50,6 +52,12 @@ cd pdv_back_java
 Correr proyecto:
 ```bash
 mvn clean package && mvn spring-boot:run
+```
+---
+
+Levantar RabbitMQ:
+```bash
+docker compose up
 ```
 ---
 
