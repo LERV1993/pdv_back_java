@@ -63,4 +63,5 @@ public class ReservationDetailResponseDTO {
 
     @Schema(description = "List of articles for reservation")
     private List<ArticleResponseDTO> articles;
+    
 }

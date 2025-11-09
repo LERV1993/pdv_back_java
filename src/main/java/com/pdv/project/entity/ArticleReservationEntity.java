@@ -34,7 +34,7 @@ public class ArticleReservationEntity {
     public static List<ArticleReservationEntity> fromReservationEntityAndRequest(ReservationEntity reservationentity, ReservationRequestDTO request) {
 
         if (reservationentity == null) {
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         List<ArticleReservationEntity> listArticlesReservation = new ArrayList<>();

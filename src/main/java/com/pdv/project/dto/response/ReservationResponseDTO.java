@@ -35,7 +35,7 @@ public class ReservationResponseDTO implements Serializable {
     public static ReservationResponseDTO fromEntity(ReservationEntity entity) {
 
         if (entity == null) {
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         return ReservationResponseDTO.builder()

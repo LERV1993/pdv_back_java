@@ -1,13 +1,14 @@
 package com.pdv.project.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.pdv.project.config.RabbitMQConfig;
+import com.pdv.project.dto.rabbitTemplate.ReservationTemplateDTO;
 import com.pdv.project.dto.request.ReservationRequestDTO;
 import com.pdv.project.dto.response.ArticleResponseDTO;
 import com.pdv.project.dto.response.PeopleResponseDTO;
@@ -24,9 +25,8 @@ import com.pdv.project.repository.ArticleReservationRepository;
 import com.pdv.project.repository.PeopleRepository;
 import com.pdv.project.repository.ReservationRepository;
 import com.pdv.project.repository.RoomsRepository;
+import com.pdv.project.shared.service.RabbitMQService;
 import com.pdv.project.utils.DataTimeUtils;
-
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReservationsService {
 
-     private final RabbitTemplate rabbitTemplate;
+    private final RabbitMQService rabbitMqService;
 
     private final ReservationRepository reservationRepository;
     private final PeopleRepository peopleRepository;
@@ -62,10 +62,10 @@ public class ReservationsService {
 
         if (request == null) {
             log.info("Reservations Service - Add reservations: request is null.");
-            return null;
+            throw new IllegalArgumentException("The request cannot be null");
         }
 
-        if(request.getId() != null){
+        if (request.getId() != null) {
             articlesReservationRepository.deleteByReservationId(request.getId());
         }
 
@@ -74,27 +74,27 @@ public class ReservationsService {
                 || !request.getDate_hour_end().isAfter(request.getDate_hour_start())) {
 
             log.info("Reservations Service - Add reservations: The dates selected for the reservation are not valid.");
-            return null;
+            throw new IllegalArgumentException("The dates selected for the reservation are not valid.");
         }
 
         if (!this.peopleExist(request.getId_people())) {
             log.info("Reservation Service - Add/Edit: The selected person ID does not exist in the system.");
-            return null;
+            throw new IllegalArgumentException("The selected person ID does not exist in the system.");
         }
 
         if (!this.roomExist(request.getId_room())) {
             log.info("Reservation Service - Add/Edit: The selected room ID does not exist in the system.");
-            return null;
+            throw new IllegalArgumentException("The selected room ID does not exist in the system.");
         }
 
         if (!this.articlesExistAndStillAvailable(request)) {
             log.info("Reservation Service - Add/Edit: Some articles do not exist or are unavailable.");
-            return null;
+            throw new IllegalArgumentException("Some articles do not exist or are unavailable.");
         }
 
         if (this.validateReservation(request)) {
             log.info("Reservation Service - Add/Edit: The selected reservation overlaps with an existing one.");
-            return null;
+            throw new IllegalArgumentException("The selected reservation overlaps with an existing one.");
         }
 
         ReservationEntity reservationEntity = ReservationEntity.fromRequest(request);
@@ -105,17 +105,22 @@ public class ReservationsService {
 
         ReservationResponseDTO response = ReservationResponseDTO.fromEntity(reservationEntitySaved);
 
-        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, response );
-
+        try{
+            this.rabbitMqService.sendTemplate(ReservationTemplateDTO.fromDetails(this.getReservationDetails(response.getId())));
+        }catch(EntityNotFoundException e){
+            e.printStackTrace();
+            log.info("Reservation Service - Add/Edit: Reservation details cannot be found to send template to RabbitMQ.");
+        }
+        
         return response;
     }
 
     @Transactional
     public ReservationResponseDTO deleteReservations(Long id) {
 
-        if(id == null){
+        if (id == null) {
             log.info("Reservation Service - Delete Reservation: id null.");
-            return null;
+            throw new IllegalArgumentException("To delete a reservation the id cannot be null");
         }
 
         Optional<ReservationEntity> entity = this.reservationRepository.findById(id);
@@ -127,7 +132,7 @@ public class ReservationsService {
         }
 
         log.info("Reservation Service - Delete Reservation: The record for id {}, no exist.", id);
-        return null; 
+        throw new IllegalArgumentException("The request ID does not match any reservation.");
     }
 
     public ReservationDetailResponseDTO getReservationDetails(Long id) {
@@ -138,21 +143,21 @@ public class ReservationsService {
         return this.reservationToReservationDetails(reservation);
     }
 
-    public  List<ReservationDetailResponseDTO> getReservationDetailsByPersonId(Long id) {
+    public List<ReservationDetailResponseDTO> getReservationDetailsByPersonId(Long id) {
 
         List<ReservationEntity> reservation = reservationRepository.findByPeople_Id(id);
-        
-        if(reservation.isEmpty()){
+
+        if (reservation.isEmpty()) {
             new EntityNotFoundException("Reservation not found with people id " + id);
         }
 
-        return reservation.stream().map(r-> this.reservationToReservationDetails(r)).toList();
+        return reservation.stream().map(r -> this.reservationToReservationDetails(r)).toList();
     }
 
     public List<ReservationDetailResponseDTO> getAllReservationDetails() {
 
         List<ReservationEntity> reservation = reservationRepository.findAll();
-        return reservation.stream().map(r-> this.reservationToReservationDetails(r)).toList();
+        return reservation.stream().map(r -> this.reservationToReservationDetails(r)).toList();
     }
 
     private boolean peopleExist(Long id_people) {
@@ -185,7 +190,8 @@ public class ReservationsService {
             return false;
         }
 
-        if (this.articlesReservationRepository.hasOverlappingArticlesReservation(id_articles, request.getId(), request.getDate_hour_start(), request.getDate_hour_end())) {
+        if (this.articlesReservationRepository.hasOverlappingArticlesReservation(id_articles, request.getId(),
+                request.getDate_hour_start(), request.getDate_hour_end())) {
             log.info("Reservation Service - Articles Exist And Still Available: Some of the selected items are not available for reservation.");
             return false;
         }
@@ -198,10 +204,10 @@ public class ReservationsService {
 
         if (request.getId() != null) {
             return this.reservationRepository.overlappingReserveExists(
-                request.getId(),    
-                request.getId_room(),
-                request.getDate_hour_start(),
-                request.getDate_hour_end());
+                    request.getId(),
+                    request.getId_room(),
+                    request.getDate_hour_start(),
+                    request.getDate_hour_end());
         }
 
         return this.reservationRepository.overlappingReserveExistsForCreate(request.getId_room(),
@@ -210,18 +216,29 @@ public class ReservationsService {
 
     }
 
-    private ReservationDetailResponseDTO reservationToReservationDetails(ReservationEntity reservation){
+    private ReservationDetailResponseDTO reservationToReservationDetails(ReservationEntity reservation) {
 
-        List<ArticleReservationEntity> articlesReservationEntity = articlesReservationRepository.findByReservation(reservation);
-        List<ArticleResponseDTO> articleResponse = articlesReservationEntity.stream()
-                .map(ar -> ArticleResponseDTO.fromEntity(ar.getArticle()))
-                .toList();
+        List<ArticleReservationEntity> articlesReservationEntity = articlesReservationRepository
+                .findByReservation(reservation);
+
+         List<ArticleResponseDTO> articleResponse = new ArrayList<>();
+
+        if(!articlesReservationEntity.isEmpty()){
+
+            List<Long> articlesIds = articlesReservationEntity.stream().map(articleReservation -> articleReservation.getArticle().getId()).toList();
+
+            List<ArticleEntity> articles = this.articlesRepository.findAllById(articlesIds);
+
+            articleResponse = articles.stream().map(ArticleResponseDTO::fromEntity).toList();
+        }
 
         RoomEntity room = roomsRepository.findById(reservation.getRoom().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Room not found with id " + reservation.getRoom().getId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Room not found with id " + reservation.getRoom().getId()));
 
         PeopleEntity people = peopleRepository.findById(reservation.getPeople().getId())
-                .orElseThrow(() -> new EntityNotFoundException("People not found with id " + reservation.getPeople().getId()));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "People not found with id " + reservation.getPeople().getId()));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -234,6 +251,5 @@ public class ReservationsService {
                 .articles(articleResponse)
                 .build();
     }
-
 
 }

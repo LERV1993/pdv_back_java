@@ -22,7 +22,7 @@ public class ArticleResponseDTO extends BaseDTO {
     public static ArticleResponseDTO fromEntity(ArticleEntity entity){
 
         if(entity == null){
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         return ArticleResponseDTO.builder()

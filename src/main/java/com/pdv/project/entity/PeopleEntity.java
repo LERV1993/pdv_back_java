@@ -29,7 +29,7 @@ public class PeopleEntity {
     public static PeopleEntity fromRequest(PeopleRequestDTO request) {
 
         if (request == null) {
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         return PeopleEntity.builder()

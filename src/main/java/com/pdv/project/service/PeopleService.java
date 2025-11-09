@@ -38,7 +38,7 @@ public class PeopleService {
 
         if(request == null){
             log.info("People Service - Add People: request null.");
-            return null;
+            throw new IllegalArgumentException("The request cannot be null.");
         }
 
         PeopleEntity entity = PeopleEntity.fromRequest(request);
@@ -54,7 +54,7 @@ public class PeopleService {
 
         if(id == null){
             log.info("People Service - Delete People: id null.");
-            return null;
+            throw new IllegalArgumentException("To delete a record the ID cannot be null.");
         }
 
         Optional<PeopleEntity> entity = this.repository.findById(id);
@@ -65,7 +65,7 @@ public class PeopleService {
         }
 
         log.info("People Service - Delete People: The record for id {}, no exist.", id);
-        return null; 
+        throw new IllegalArgumentException("The request ID does not match any people."); 
     }
 
 }

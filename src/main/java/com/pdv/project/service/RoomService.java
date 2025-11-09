@@ -38,7 +38,7 @@ public class RoomService {
 
         if(request == null){
             log.info("Rooms Service - Add Rooms: request null.");
-            return null;
+            throw new IllegalArgumentException("The request cannot be null.");
         }
 
         RoomEntity entity = RoomEntity.fromRequest(request);
@@ -54,7 +54,7 @@ public class RoomService {
 
         if(id == null){
             log.info("Rooms Service - Delete Rooms: id null.");
-            return null;
+            throw new IllegalArgumentException("To delete a record the ID cannot be null.");
         }
 
         Optional<RoomEntity> entity = this.repository.findById(id);
@@ -65,7 +65,7 @@ public class RoomService {
         }
 
         log.info("Rooms Service - Delete Rooms: The record for id {}, no exist.", id);
-        return null; 
+        throw new IllegalArgumentException("The request ID does not match any room."); 
     }
 
 }
