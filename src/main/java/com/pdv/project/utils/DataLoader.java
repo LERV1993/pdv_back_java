@@ -4,20 +4,21 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.pdv.project.entity.AuthCredentialsEntity;
+import com.pdv.project.entity.PeopleEntity;
 import com.pdv.project.enums.Role;
 import com.pdv.project.repository.AuthCredentialsRepository;
+import com.pdv.project.repository.PeopleRepository;
 import com.pdv.project.security.AuthPassword;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @Component
+@AllArgsConstructor
 public class DataLoader implements CommandLineRunner {
     
     private final AuthCredentialsRepository authCredentialsRepository;
-    
-    public DataLoader(AuthCredentialsRepository authCredentialsRepository) {
-        this.authCredentialsRepository = authCredentialsRepository;
-    }
+    private final PeopleRepository peopleRepository;
     
     @Override
     @Transactional
@@ -41,6 +42,14 @@ public class DataLoader implements CommandLineRunner {
                 password,
                 Role.ADMIN
             );
+
+            PeopleEntity peopleAdmin = PeopleEntity.builder()
+            .id(null)
+            .name("Admin user")
+            .email(email)
+            .build(); 
+
+            peopleRepository.save(peopleAdmin);
             authCredentialsRepository.save(admin);
             System.out.println("User admin created sucessfully.");
         }
@@ -56,6 +65,14 @@ public class DataLoader implements CommandLineRunner {
                 password,
                 Role.USER
             );
+
+            PeopleEntity peopleUser = PeopleEntity.builder()
+            .id(null)
+            .name("Normal user")
+            .email(email)
+            .build(); 
+
+            peopleRepository.save(peopleUser);
             authCredentialsRepository.save(user);
             System.out.println("Normal user created successfully.");
         }
