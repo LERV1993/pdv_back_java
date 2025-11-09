@@ -155,18 +155,7 @@ public class ReservationController {
             }
 
             ReservationResponseDTO response = this.service.addEditReservations(request);
-
-            if(response != null){
-                return ResponseEntity.ok(response);
-            }
-
-            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("It was not possible to edit the requested record.")
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
 
@@ -245,23 +234,11 @@ public class ReservationController {
             }
 
             ReservationResponseDTO response = this.service.addEditReservations(request);
-
-            if(response != null){
-                return ResponseEntity.ok(response);
-            }
-
-            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("We were unable to create the reservation. Please review your request.")
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.ok(response);
             
-
         } catch (Exception e) {
 
-            log.info("Error: {}", e.getCause());
+            log.info("Error: {}", e);
 
             ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
                     .error(e.getMessage())
@@ -402,19 +379,7 @@ public class ReservationController {
         try {   
 
             ReservationResponseDTO reservationDeleted = this.service.deleteReservations(id);
-
-            if(reservationDeleted != null){
-                return ResponseEntity.ok(reservationDeleted);
-            }
-
-            ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .error("The record cannot be deleted, please review the reqeust.")
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .timestamp(java.time.LocalDateTime.now().toString())
-                    .build();
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-            
+            return ResponseEntity.ok(reservationDeleted);
 
         } catch (Exception e) {
 
