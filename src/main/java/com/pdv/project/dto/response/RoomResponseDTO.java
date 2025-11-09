@@ -21,7 +21,7 @@ public class RoomResponseDTO extends BaseDTO {
 
     public static RoomResponseDTO fromEntity(RoomEntity entity) {
         if (entity == null) {
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         return RoomResponseDTO.builder()

@@ -29,7 +29,7 @@ public class RoomEntity {
     public static RoomEntity fromRequest(RoomRequestDTO request){
 
         if(request == null){
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         return RoomEntity.builder()

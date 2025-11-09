@@ -39,7 +39,7 @@ public class ReservationEntity {
     public static ReservationEntity fromRequest(ReservationRequestDTO request){
 
         if(request == null){
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         RoomEntity room = RoomEntity.builder()

@@ -60,7 +60,7 @@ public class ArticleService {
 
         if(request == null){
             log.info("Articles Service - Add Articles: request null.");
-            return null;
+            throw new IllegalArgumentException("The request cannot be null.");
         }
 
         ArticleEntity entity = ArticleEntity.fromRequest(request);
@@ -76,7 +76,7 @@ public class ArticleService {
 
         if(id == null){
             log.info("Article Service - Delete Article: id null.");
-            return null;
+            throw new IllegalArgumentException("To delete a record the ID cannot be null.");
         }
 
         Optional<ArticleEntity> entity = this.repository.findById(id);
@@ -87,7 +87,7 @@ public class ArticleService {
         }
 
         log.info("Article Service - Delete Article: The record for id {}, no exist.", id);
-        return null; 
+        throw new IllegalArgumentException("The request ID does not match any article."); 
     }
 
 }

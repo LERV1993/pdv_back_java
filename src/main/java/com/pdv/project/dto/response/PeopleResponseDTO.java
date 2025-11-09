@@ -22,7 +22,7 @@ public class PeopleResponseDTO extends BaseDTO {
     public static PeopleResponseDTO fromEntity(PeopleEntity entity){
 
         if(entity == null){
-            return null;
+            throw new IllegalArgumentException("The entity cannot be null.");
         }
 
         return PeopleResponseDTO.builder()
