@@ -37,7 +37,7 @@ DDL=update
 
 Para el ejemplo se utiliza la base de datos por defecto que crea [Xampp/Lampp](https://www.apachefriends.org/es/index.html) pero se puedo usar cualquier base SQL.
 
-
+Para acceder al panel de administración de RabittMQ se debe ingresar a [RabbitMQ](http://localhost:15672) usaurio: admin - Contraseña: admin
 
 ## ⬇️ Installation 
 
